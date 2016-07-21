@@ -38,14 +38,8 @@ Statement is a TODO
     + id: 1 (required, string) - ID of the statement
     
 + Attributes (object)
-    + id: foo (string) - The id of the statement
-    + text: We in Indiana have . . . the highest credit rating in the nation. (string) - The statement's text
-    + person_name: Mike Pence (string) - A name of the person who said the statement
-    + rating: false (string) - The rating of the statement: true | false | half-true. This dictionary depends on the fact-checker
-    + explanation: Indiana Gov. Mike Pence, the Republican nominee for vice president, introduced himself... (string) - The extended explanation of the rating
-    + factchecker_uri: http://www.politifact.com/truth-o-meter/statements/2016/jul/21/mike-pence/mike-pence-touts-top-indiana-credit-rating-achieve/ (string) - The URI of the fact check on fact-checker website
-    + sources: http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07 (string) - TODO relationships  
-
+    + data (Statement Object)
+    
 ### View specific statement [GET]
 
 + Response 200 (application/json)
@@ -63,7 +57,13 @@ in the database will be returned.
     + uri (optional, URI, `http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07`) ... URI to check for a fact check.
 
 + Response 200 (application/json)
-    + Attributes (array[Statement])
+    + Attributes
+        + data (array[Statement Object])
+        + links
+            + first: http://factual.ro/api/statements?page[number]=0 (string)
+            + last: http://factual.ro/api/statements?page[number]=3 (string)
+            + prev: http://factual.ro/api/statements?page[offset]=0 (string)
+            + next: http://factual.ro/api/statements?page[offset]=2 (string)
 
 ## Group Sources
 
@@ -77,8 +77,7 @@ but also youtube video and other online sources.
     + id: 1 (required, string) - ID of the source; TODO shouldn't we use URIs?
     
 + Attributes (object)
-    + id: 1 (string) - The id of the statement
-    + uri: http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07 (string)
+    + data (Source Object)
 
 ### View a source [GET]
 
@@ -90,4 +89,29 @@ but also youtube video and other online sources.
 ### List all sources [GET]
 
 + Response 200 (application/json)
-    + Attributes (array[Source])
+    + Attributes
+        + data (array[Source Object])
+        + links
+            + first: http://factual.ro/api/sources?page[number]=0 (string)
+            + last: http://factual.ro/api/sources?page[number]=3 (string)
+            + prev: http://factual.ro/api/sources?page[offset]=0 (string)
+            + next: http://factual.ro/api/sources?page[offset]=2 (string)
+
+# Data Structures
+
+## Statement Object (object)
++ id: 1 (string) - The id of the statement
++ type: statement (string, fixed)
++ attributes
+    + text: We in Indiana have . . . the highest credit rating in the nation. (string) - The statement's text
+    + person_name: Mike Pence (string) - A name of the person who said the statement
+    + rating: false (string) - The rating of the statement: true | false | half-true. This dictionary depends on the fact-checker
+    + explanation: Indiana Gov. Mike Pence, the Republican nominee for vice president, introduced himself... (string) - The extended explanation of the rating
+    + factchecker_uri: http://www.politifact.com/truth-o-meter/statements/2016/jul/21/mike-pence/mike-pence-touts-top-indiana-credit-rating-achieve/ (string) - The URI of the fact check on fact-checker website
+    + sources: http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07 (string) - TODO relationships  
+
+## Source Object (object)
++ id: 1 (string) - The id of the source
++ type: source (string, fixed)
++ attributes
+    + uri: http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07 (string)
