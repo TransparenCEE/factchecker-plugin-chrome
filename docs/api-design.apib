@@ -1,0 +1,115 @@
+FORMAT: 1A
+HOST: http://factual.ro/api/
+
+# Factual
+
+Factual is a simple API allowing acccess to the Factual database.
+
+## Authentication
+Some *Factual* endpoints do not require authentication while others do:
+
+* The query facts endpoint should **not** require authentication. It will
+be used by the browser extension and the website widget.
+* All other endpoints will require authentication. They will be used to
+build tools to enable easier association of facts to URIs.
+
+The priority, for now, are the unautenthicated enpoints. All the others
+are just ideas at the moment to allow the development of tools for easier
+updating and association of URIs with already existing facts. Since the
+tools are just an idea we should not focus on them immediately.
+
+## Request format
+
+Requests with a message-body are using plain JSON (application/json) to
+set or update resource states.
+
+## Error States
+
+The common [HTTP Response Status Codes](https://github.com/for-GET/know-your-http-well/blob/master/status-codes.md)
+are used.
+
+## Notes on implementation
+These are just suggestions at this moment. It would be nice if the API
+would be implemented as described here but due to the existing website
+being in Wordpress and the various options of creating APIs we should
+choose the best option even if, for example, it does not allow us to rename
+the fields returned by the API.
+
+## The fact object
+
+The objects that the API works with will have the following structure:
+
+* id (string) - The id of the fact.
+* uri (string) - The URI of the fact check on Factual.
+* explanation (string) - The extended explanation of the fact check result.
+* truth (string) - The truth of the fact: true | false | partial.
+* websites (list) - A list of websites that the fact applies to. The list
+contains objects with the following structure:
+    * id (string) - ID in the system.
+    * uri (string) - The URI of the article.
+    * fact (string) - The fact text to highlight on the page.
+
+### Example fact
+
+For [this fact](http://www.factual.ro/declaratii/liviu-dragnea-de-cand-e-gabi-firea-primar-nu-s-taiat-niciun-pom/)
+the object would be:
+
+* id - Wordpress post id
+* uri - http://www.factual.ro/declaratii/liviu-dragnea-de-cand-e-gabi-firea-primar-nu-s-taiat-niciun-pom/
+* explanation - Declarația lui Liviu Dragnea este falsă. La 6 zile de când Gabriela Firea a preluat funcția de primar general al capitalei, Direcția de Mediu din cadrul PMB a emis aviz pentru defrișarea a 72 de arbori de către ADP Sector 1, inclusiv pe Bd. Kiseleff.
+* truth - false
+* websites
+    * Website 1
+        * id - 1
+        * uri - http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07
+        * fact - Gabi Firea este sprijinită de partid, a fost sprijinită să câștige alegerile, este și acum. Am văzut o știre că Gabi Firea a tăiat pomii pe Kiseleff. Nu există așa ceva. Nu s-a tăiat niciun pom. Vreau să vă spun ceva, e foarte simplu, dacă pe Kiseleff s-ar tăia o crenguță toate televiziunile ar fi acolo, că e Kiseleff. Alea erau poze de nu știu când. Nu avea cum ca să se taie un pom pe Kiseleff, ca să se taie un pom trebuie să fie blocat Kiselefful. De când e Gabi Firea primar nu s-a tăiat niciun pom
+
+    * Website 2
+        * id - 2
+        * ...
+    * Website 3
+        * id - 4
+        * ...
+
+## Facts [/facts{?uri}]
+
+### Get a list of facts [GET]
+
+This endpoint will return all facts in the system if no `uri` parameter
+is sent or the facts (in most cases just one) that are associated with
+the specified `uri`.
+
++ Parameters
+    + uri (optional, URI, `http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07`) ... URI to check for a fact check.
+
++ Response 200 (application/json)
+    + Attributes
+        + List
+            + id: foo (string) - The id of the fact.
+            + uri: http://factual.ro/fact/foo (string) - The URI of the fact check on Factual.
+            + fact: Gabi Firea este sprijinită de partid... (string) - The fact text to highlight on the article page.
+            + explanation: Declarația lui Liviu Dragnea este falsă... (string) - The extended explanation of the fact check result.
+            + truth: false (string) - The truth of the fact: true | false | partial.
+
+
+## Fact association [/facts/{id}/websites/]
+
+### Associate an article with a fact[POST]
+
++ Parameters
+    + id (required, string, `12345`) ... ID of the fact.
+
++ Request
+    + Attributes
+        + uri: http://example.com/foo/bar (string) - The URI of the article.
+        + fact: Gabi Firea este sprijinită de partid... (string) - The fact text to highlight on the article page.
+
++ Response 200 (application/json)
+
+### Delete an article from a fact[DELETE /facts/{id}/websites/{assocId}]
+
++ Parameters
+    + id (required, string, `12345`) ... ID of the fact.
+    + assocId (required, string, `12345`) ... ID of the association.
+
++ Response 200 (application/json)
