@@ -45,16 +45,13 @@ Statement is a TODO
 + Response 200 (application/json)
     + Attributes (Statement)
 
-## Statements list [/statements{?uri}]
+## Statements list [/statements]
 
 ### Statements in given source [GET]
 
 This endpoint will return all the statements that are associated with
 the specified `uri`. If no `uri` parameter is set all the statements 
 in the database will be returned.
-
-+ Parameters
-    + uri (optional, URI, `http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07`) ... URI to check for a fact check.
 
 + Response 200 (application/json)
     + Attributes
@@ -71,7 +68,7 @@ These are the sources of the statements that were fact-checked.
 They can include news articles or govermental websites, 
 but also youtube video and other online sources.
 
-## Source [/sources/{id}]
+## Source [/sources/{id}{?include}]
 
 + Parameters
     + id: 1 (required, string) - ID of the source; TODO shouldn't we use URIs?
@@ -83,6 +80,16 @@ but also youtube video and other online sources.
 
 + Response 200 (application/json)
     + Attributes (Source)
+
+### View a source with statements [GET /sources/{id}{?include}]
+
++ Parameters
+    + id: 1 (required, string) - ID of the source; TODO shouldn't we use URIs?
+    + include: statements (string, optional) - include statements from this URI
+
++ Response 200 (application/json)
+    + Attributes (Source)
+        + included (array[Statement Object])
 
 ## Sources list [/sources]
 
@@ -115,3 +122,11 @@ but also youtube video and other online sources.
 + type: source (string, fixed)
 + attributes
     + uri: http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07 (string)
++ relationships
+    + statements
+        + links
+            + self: http://factual.ro/api/sources/1/relationships/statements (string)
+            + related: http://factual.ro/api/sources/1/statements (string)
+        + data
+            + type: statement (string, fixed)
+            + id: 1 (string)
