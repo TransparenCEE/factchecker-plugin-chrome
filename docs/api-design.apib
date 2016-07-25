@@ -30,22 +30,21 @@ are used.
 
 ## Group Statements
 
-Statement is a TODO  
+Statement is a claim made by politician (or organization) that has been fact-checked.  
 
 ## Statement [/statements/{id}]
 
 + Parameters
     + id: 1 (required, string) - ID of the statement
-    
-+ Attributes (object)
-    + data (Statement Object)
+
++ Attributes (Statement Object)
     
 ### View specific statement [GET]
 
 + Response 200 (application/json)
     + Attributes (Statement)
 
-## Statements list [/statements]
+## Statements list [/statements{?uri}{?client}{?origin}]
 
 ### Statements in given source [GET]
 
@@ -53,14 +52,18 @@ This endpoint will return all the statements that are associated with
 the specified `uri`. If no `uri` parameter is set all the statements 
 in the database will be returned.
 
++ Parameters
+    + uri (optional, URI, `http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07`) ... URI to check for a fact check.
+    + client (optional, enum[string]) - Who is calling the statement list?
+        + Members
+            + chrome_extension
+            + media_partner
+    + origin (optional, enum[string]) - Where has user seen the highlight first and then navigated to the article?
+        + Members
+            + facebook
+    
 + Response 200 (application/json)
-    + Attributes
-        + data (array[Statement Object])
-        + links
-            + first: http://factual.ro/api/statements?page[number]=0 (string)
-            + last: http://factual.ro/api/statements?page[number]=3 (string)
-            + prev: http://factual.ro/api/statements?page[offset]=0 (string)
-            + next: http://factual.ro/api/statements?page[offset]=2 (string)
+    + Attributes (array[Statement Object])
 
 ## Group Sources
 
@@ -68,65 +71,23 @@ These are the sources of the statements that were fact-checked.
 They can include news articles or govermental websites, 
 but also youtube video and other online sources.
 
-## Source [/sources/{id}{?include}]
-
-+ Parameters
-    + id: 1 (required, string) - ID of the source; TODO shouldn't we use URIs?
-    
-+ Attributes (object)
-    + data (Source Object)
-
-### View a source [GET]
-
-+ Response 200 (application/json)
-    + Attributes (Source)
-
-### View a source with statements [GET /sources/{id}{?include}]
-
-+ Parameters
-    + id: 1 (required, string) - ID of the source; TODO shouldn't we use URIs?
-    + include: statements (string, optional) - include statements from this URI
-
-+ Response 200 (application/json)
-    + Attributes (Source)
-        + included (array[Statement Object])
-
 ## Sources list [/sources]
 
 ### List all sources [GET]
 
+Lists URIs of all sources
+
 + Response 200 (application/json)
-    + Attributes
-        + data (array[Source Object])
-        + links
-            + first: http://factual.ro/api/sources?page[number]=0 (string)
-            + last: http://factual.ro/api/sources?page[number]=3 (string)
-            + prev: http://factual.ro/api/sources?page[offset]=0 (string)
-            + next: http://factual.ro/api/sources?page[offset]=2 (string)
+    + Attributes (array[string])
+
 
 # Data Structures
 
 ## Statement Object (object)
 + id: 1 (string) - The id of the statement
-+ type: statement (string, fixed)
-+ attributes
-    + text: We in Indiana have . . . the highest credit rating in the nation. (string) - The statement's text
-    + person_name: Mike Pence (string) - A name of the person who said the statement
-    + rating: false (string) - The rating of the statement: true | false | half-true. This dictionary depends on the fact-checker
-    + explanation: Indiana Gov. Mike Pence, the Republican nominee for vice president, introduced himself... (string) - The extended explanation of the rating
-    + factchecker_uri: http://www.politifact.com/truth-o-meter/statements/2016/jul/21/mike-pence/mike-pence-touts-top-indiana-credit-rating-achieve/ (string) - The URI of the fact check on fact-checker website
-    + sources: http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07 (string) - TODO relationships  
-
-## Source Object (object)
-+ id: 1 (string) - The id of the source
-+ type: source (string, fixed)
-+ attributes
-    + uri: http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07 (string)
-+ relationships
-    + statements
-        + links
-            + self: http://factual.ro/api/sources/1/relationships/statements (string)
-            + related: http://factual.ro/api/sources/1/statements (string)
-        + data
-            + type: statement (string, fixed)
-            + id: 1 (string)
++ text: We in Indiana have . . . the highest credit rating in the nation. (string) - The statement's text
++ person_name: Mike Pence (string) - A name of the person who said the statement
++ rating: false (string) - The rating of the statement: true | false | half-true. This dictionary depends on the fact-checker
++ explanation: Indiana Gov. Mike Pence, the Republican nominee for vice president, introduced himself... (string) - The extended explanation of the rating
++ factchecker_uri: http://www.politifact.com/truth-o-meter/statements/2016/jul/21/mike-pence/mike-pence-touts-top-indiana-credit-rating-achieve/ (string) - The URI of the fact check on fact-checker website
++ sources: http://www.agerpres.ro/politica/2016/07/10/dragnea-de-cand-e-gabriela-firea-primar-nu-s-a-taiat-niciun-pom-pe-kiseleff-21-41-07  (array[string])
