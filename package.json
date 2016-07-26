@@ -12,7 +12,7 @@
     "url": "https://github.com/TransparenCEE/factchecker-plugin-chrome.git"
   },
   "author": "Alexandru Badiu <andu@ctrlz.ro> (http://alexandrubadiu.ro/)",
-  "license": "MIT",
+  "license": "AGPL",
   "bugs": {
     "url": "https://github.com/TransparenCEE/factchecker-plugin-chrome/issues"
   },
