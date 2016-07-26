@@ -16,6 +16,8 @@
     "default_title": "Factual"
   },
   "permissions": [
+    "storage",
+    "tabs"
   ],
   "externally_connectable": {
     "matches": [

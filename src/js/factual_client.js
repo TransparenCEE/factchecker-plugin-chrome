@@ -10,6 +10,33 @@
 class Factual {
   constructor() {
     console.info('[factchecker-plugin-chrome] Client init.');
+
+    this.settings = {
+      enabled: true,
+    };
+
+    chrome.runtime.sendMessage({
+      sender: 'factual-client',
+      action: 'settings_get',
+    }, (response) => {
+      this.settings = response.msg;
+    });
+
+    this.setupEvents();
+  }
+
+  setupEvents() {
+    chrome.runtime.onMessage.addListener((request) => {
+      console.info('[factchecker-plugin-chrome] Got message.');
+
+      if (request.sender !== 'factual') {
+        return;
+      }
+
+      if (request.action === 'settings_updated') {
+        this.settings = request.msg;
+      }
+    });
   }
 }
 
