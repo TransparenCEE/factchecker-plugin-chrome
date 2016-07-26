@@ -1,0 +1,55 @@
+{
+  "name": "Factual",
+  "description": "Prima extensie de fact-checking pe politicile și declarațiile publice din România.",
+  "version": "0.0.1",
+  "icons": {
+    "16": "assets/factual_icon_16x16.png",
+    "32": "assets/factual_icon_32x32.png",
+    "48": "assets/factual_icon_48x48.png",
+    "128": "assets/factual_icon_128x128.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "assets/factual_icon_19x19.png",
+      "38": "assets/factual_icon_38x38.png"
+    },
+    "default_title": "Factual"
+  },
+  "permissions": [
+  ],
+  "externally_connectable": {
+    "matches": [
+    ]
+  },
+  "background": {
+    "scripts": [
+      "factual_common.js",
+      "factual_reload.js",
+      "factual_background.js"
+    ],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "css": [
+        "css/factual.css"
+      ],
+      "js": [
+        "factual_common.js",
+        "factual_client.js"
+      ]
+    }
+  ],
+  "manifest_version": 2,
+  "web_accessible_resources": [
+    "assets/factual_icon_16x16.png",
+    "assets/factual_icon_19x19.png",
+    "assets/factual_icon_32x32.png",
+    "assets/factual_icon_38x38.png",
+    "assets/factual_icon_48x48.png",
+    "assets/factual_icon_128x128.png"
+  ]
+}

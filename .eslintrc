@@ -1,0 +1,20 @@
+{
+  "extends": "airbnb/base",
+  "rules": {
+    "no-console": 0,
+    "no-alert": 0,
+    "max-len": [2, 160, 4]
+  },
+  "globals": {
+    "alert": 1,
+    "chrome": 1,
+    "PDK": 1,
+    "$": 1,
+    "q": 1,
+    "jQuery": 1,
+    "window": 1,
+    "document": 1,
+    "_": 1,
+    "async": 1
+  }
+}
