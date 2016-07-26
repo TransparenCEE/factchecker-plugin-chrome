@@ -6,11 +6,12 @@
  *
  * @author Alexandru Badiu <andu@ctrlz.ro>
  */
-
+import FactualBase from './factual_base';
 require('../css/factual.scss');
 
-class FactualBackground {
+class FactualBackground extends FactualBase {
   constructor() {
+    super();
     console.info('[factchecker-plugin-chrome] Background init.');
 
     this.settings = {

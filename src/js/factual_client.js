@@ -6,9 +6,11 @@
  *
  * @author Alexandru Badiu <andu@ctrlz.ro>
  */
+import FactualBase from './factual_base';
 
-class Factual {
+class Factual extends FactualBase {
   constructor() {
+    super();
     console.info('[factchecker-plugin-chrome] Client init.');
 
     this.settings = {
