@@ -86,7 +86,16 @@ gulp.task('build', ['pre-build'], (callback) => {
 });
 
 gulp.task('static', () => {
-  gulp.src(['manifest.json', 'src/**/*.png', 'src/**/*.gif'])
+  gulp.src([
+    'manifest.json',
+    'src/**/*.png',
+    'src/**/*.gif',
+    'src/**/*.eot',
+    'src/**/*.otf',
+    'src/**/*.woff',
+    'src/**/*.ttf',
+    'src/**/*.woff2',
+  ])
     .pipe(gulp.dest('./build'));
 });
 

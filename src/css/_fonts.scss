@@ -1,0 +1,11 @@
+@font-face{
+    font-family: 'factual_source_sans_pro';
+    font-weight: 400;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('chrome-extension://__MSG_@@extension_id__/fonts/SourceSansPro-Regular.eot') format('embedded-opentype'),
+         url('chrome-extension://__MSG_@@extension_id__/fonts/SourceSansPro-Regular.ttf.woff2') format('woff2'),
+         url('chrome-extension://__MSG_@@extension_id__/fonts/SourceSansPro-Regular.otf.woff') format('woff'),
+         url('chrome-extension://__MSG_@@extension_id__/fonts/SourceSansPro-Regular.otf') format('opentype'),
+         url('chrome-extension://__MSG_@@extension_id__/fonts/SourceSansPro-Regular.ttf') format('truetype');
+}

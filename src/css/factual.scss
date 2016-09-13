@@ -1,0 +1,306 @@
+@import 'popover';
+@import 'fonts';
+
+.factchecker-fact-mark-true {
+  background-color: #ABE5DD !important;
+}
+
+.factchecker-fact-mark-ptrue {
+  background-color: #D4EFED !important;
+}
+
+.factchecker-fact-mark-false {
+  background-color: #FEC0C2 !important;
+}
+
+.factchecker-fact-mark-pfalse {
+  background-color: #FED9D9 !important;
+}
+
+.factchecker-fact-mark-neutral {
+  background-color: #D4D4D4 !important;
+}
+
+mark {
+  cursor: pointer;
+}
+
+.factchecker-fact-details-container {
+  position:fixed;
+  bottom:0px;
+  width:100%;
+
+  text-align: center;
+}
+
+.factchecker-fact-details {
+  font-family: factual_source_sans_pro,Helvetica,Arial,sans-serif;
+  background: white;
+
+  width: 400px;
+
+  border-top: 2px solid #c2c2c2;
+
+  &.factchecker-fact-open {
+    display: block;
+  }
+
+  &.factchecker-fact-true {
+    border-top-color: #00A98E;
+
+    .factchecker-fact-details__status {
+      background-color: #00A98E;
+    }
+  }
+
+  &.factchecker-fact-false {
+    border-top-color: #EA2F31;
+
+    .factchecker-fact-details__status {
+      background-color: #EA2F31;
+    }
+  }
+
+  &.factchecker-fact-pfalse {
+    border-top-color: #F38181;
+
+    .factchecker-fact-details__status {
+      background-color: #F38181;
+    }
+  }
+
+  &.factchecker-fact-ptrue {
+    border-top-color: #7CCAC2;
+
+    .factchecker-fact-details__status {
+      background-color: #7CCAC2;
+    }
+  }
+
+  &.factchecker-fact-neutral {
+    border-top-color: #D4D4D4;
+
+    .factchecker-fact-details__status {
+      background-color: #D4D4D4;
+    }
+  }
+
+  .factchecker-fact-details__header {
+    border-left: 1px solid #c2c2c2;
+
+    &:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+
+    .factchecker-fact-details__date {
+      color: #939393;
+      float: left;
+      padding-left: 20px;
+      padding-top: 10px;
+      font-size: 15px;
+    }
+
+    .factchecker-fact-details__close {
+      float: right;
+
+      a {
+        position: absolute;
+        right: 0;
+        top: -10px;
+        background-color: #454545;
+        width: 21px;
+        height: 21px;
+        display: block;
+        cursor: pointer;
+
+        &:hover {
+          opacity: 1;
+        }
+
+        &:before, &:after {
+          position: absolute;
+          left: 9px;
+          content: ' ';
+          height: 21px;
+          width: 2px;
+          background-color: white;
+        }
+
+        &:before {
+          transform: rotate(45deg);
+        }
+
+        &:after {
+          transform: rotate(-45deg);
+        }
+
+        &:hover:before, &:hover:after {
+          background-color: gray;
+        }
+      }
+    }
+
+    .factchecker-fact-details__statusc {
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><line x1='0' y1='0' x2='100%' y2='100%' stroke='#5AB1BB' stroke-width='2'/></svg>");
+      float: right;
+
+      .factchecker-fact-details__corner {
+        width: 30px;
+        background: red;
+      }
+
+      .factchecker-fact-details__status {
+        color: white;
+        font-size: 14px;
+        padding: 5px 10px;
+        text-transform: uppercase;
+        text-shadow: 1px 1px 20px #ffffff;
+
+        &:before {
+        }
+      }
+    }
+  }
+
+  .factchecker-fact-details__body {
+    padding: 20px;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+    border-left: 1px solid #c2c2c2;
+    border-right: 1px solid #c2c2c2;
+  }
+
+  .factchecker-fact-details__footer {
+    padding: 10px;
+    background-color: #f1f1f2;
+    border: 1px solid #c2c2c2;
+
+    &:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+
+    .factchecker-details--footer__logo {
+      float: left;
+      width: 60px;
+      height: 44px;
+    }
+
+    .factchecker-details--footer__more {
+      float: left;
+      width: 150px;
+
+      padding-top: 8px;
+
+      font-size: 12px;
+      color: #8a8989;
+      text-transform: uppercase;
+
+      a {
+        color: #2653c9;
+        text-decoration: none;
+        border-bottom: 2px solid #C9D2E7;
+      }
+    }
+
+    .factchecker-details--footer__share {
+      float: right;
+      text-transform: uppercase;
+      margin-top: 11px;
+      margin-right: 20px;
+
+      a {
+        font-size: 14px;
+        font-weight: bold;
+        color: #2653c9;
+        text-decoration: none;
+      }
+    }
+  }
+
+  &.factchecker-fact-unmatched {
+      display: block;
+      position: relative;
+      margin: 0 auto;
+      width: 650px;
+      border-top-width: 10px;
+
+    .factchecker-fact-details__statusc {
+      padding-right: 40px;
+      padding-left: 20px;
+    }
+
+    .factchecker-fact-details__header {
+      margin-bottom: -10px;
+    }
+
+    .factchecker-fact-details__footer {
+      background-color: white;
+      border-top-width: 0;
+
+      .factchecker-details--footer__more {
+        width: 400px;
+        text-align: left;
+        padding-top: 12px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.factchecker-fact-details-footnote__container {
+  display: inline-block;
+  position: relative;
+  text-indent: 0;
+}
+
+.factchecker-fact-details-footnote__button {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+
+  position: relative;
+  z-index: 5;
+  top: -0.1em;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  display: inline-block;
+  padding: 0.35em;
+  margin: 0 0.1em 0 0.2em;
+  border: none;
+  border-radius: 0.3em;
+  cursor: pointer;
+  background-color: rgba(110,110,110,0.2);
+  -webkit-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
+  backface-visibility: hidden;
+  font-size: 1rem;
+  line-height: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  -webkit-transition-property: background-color;
+  transition-property: background-color;
+  -webkit-transition-duration: 0.25s;
+  transition-duration: 0.25s;
+}
+
+.factchecker-fact-details-footnote__button__circle {
+  &:last-child {
+    margin-right: 0;
+  }
+
+  display: inline-block;
+  width: 0.25em;
+  height: 0.25em;
+  margin-right: 0.25em;
+  float: left;
+}
