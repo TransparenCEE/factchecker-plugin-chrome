@@ -1,3 +1,5 @@
+import qs from 'qs';
+
 const defaultDiacriticsRemovalMap = [
   {'base':'A', 'letters':'\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F'},
   {'base':'AA','letters':'\uA732'},
@@ -109,4 +111,66 @@ export const getDate = (timestamp) => {
   const date = new Date(timestamp * 1000);
 
   return `${date.getDate() < 10 ? '0' : ''}${date.getDate()}.${date.getMonth() < 9 ? '0' : ''}${date.getMonth() + 1}.${date.getFullYear()}`;
+};
+
+export const getUserToken = () => {
+  const pool = new Uint8Array(32);
+  crypto.getRandomValues(pool);
+
+  let uid = '';
+  for (let i = 0; i < pool.length; ++i) {
+    uid += pool[i].toString(16);
+  }
+
+  return uid;
+}
+
+export const isFacebook = () => {
+  return window.location.href.indexOf('https://www.facebook.com/') === 0;
+};
+
+export const extractLink = (url) => {
+  const fbUrls = [
+    'www.facebook.com/l.php?u=',
+    'l.facebook.com/l.php?u=',
+  ];
+
+  let found = false;
+  fbUrls.forEach((u) => {
+    if (url.indexOf(`http://${u}`) === 0 || url.indexOf(`https://${u}`) === 0) {
+      found = true;
+    }
+  });
+
+  if (!found) {
+    return url;
+  }
+
+  const parsed = qs.parse(url.split('?')[1]);
+
+  return parsed.u;
+}
+
+export const getFactInfo = (fact) => {
+  let sclass = 'true';
+  let stext = 'adevărată';
+
+  if (fact.status === 'Fals') {
+    sclass = 'false';
+    stext = 'falsă';
+  } else if (fact.status === 'Parțial fals') {
+    sclass = 'pfalse';
+    stext = 'parțial falsă';
+  } else if (fact.status === 'Parțial adevărat') {
+    sclass = 'ptrue';
+    stext = 'parțial adevărată';
+  } else if (fact.status === 'Neutru') {
+    sclass = 'neutral';
+    stext = 'neutră';
+  }
+
+  return [
+    sclass,
+    stext,
+  ];
 };

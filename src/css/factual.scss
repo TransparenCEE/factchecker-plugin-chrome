@@ -1,5 +1,6 @@
 @import 'popover';
 @import 'fonts';
+@import 'facebook';
 
 .factchecker-fact-mark-true {
   background-color: #ABE5DD !important;
@@ -143,7 +144,7 @@ mark {
     }
 
     .factchecker-fact-details__statusc {
-      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><line x1='0' y1='0' x2='100%' y2='100%' stroke='#5AB1BB' stroke-width='2'/></svg>");
+      // background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><line x1='0' y1='0' x2='100%' y2='100%' stroke='#5AB1BB' stroke-width='2'/></svg>");
       float: right;
 
       .factchecker-fact-details__corner {
@@ -303,4 +304,23 @@ mark {
   height: 0.25em;
   margin-right: 0.25em;
   float: left;
+}
+
+.factchecker-fact-facebook {
+  .factchecker-fact-unmatched {
+    display: block;
+    position: relative;
+    margin: 0 auto;
+    width: auto;
+    border-top-width: 10px;
+
+    .factchecker-fact-details__statusc {
+      padding-right: 0px;
+    }
+
+    .factchecker-details--footer__more {
+      padding-top: 4px;
+      width: 300px;
+    }
+  }
 }
