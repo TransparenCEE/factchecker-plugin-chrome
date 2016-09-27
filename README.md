@@ -1,7 +1,7 @@
 # Factual Chrome extension
 
 ## Releases
-For the latest compiled version check the [releases](https://github.com/TransparenCEE/factchecker-plugin-chrome/releases) page.
+For the latest packaged version check the [releases](https://github.com/TransparenCEE/factchecker-plugin-chrome/releases) page. Drop the `crx` file in the Chrome extensions page (`chrome://extensions/`).
 
 ## Installation
 
