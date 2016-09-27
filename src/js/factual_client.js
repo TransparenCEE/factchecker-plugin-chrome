@@ -6,8 +6,8 @@
  *
  * @author Alexandru Badiu <andu@ctrlz.ro>
  */
-import mark from 'mark.js';
-import popover from 'webui-popover';
+import Mark from 'mark.js';
+import 'webui-popover';
 import MutationSummary from 'mutation-summary';
 import FactualBase from './factual_base';
 import { removeDiacritics, getDate, getURL, isFacebook, extractLink, getFactInfo } from './util';
@@ -126,20 +126,21 @@ class Factual extends FactualBase {
   loadFacebookFacts() {
     return Promise.mapSeries(this.facebookFacts, (fact) => {
       return new Promise((resolve) => {
-        if (fact.processed) {
-          resolve(fact);
+        const processedFact = fact;
+
+        if (processedFact.processed) {
+          resolve(processedFact);
         }
 
         chrome.runtime.sendMessage({
           action: 'facts-get',
           url: fact.url,
         }, (facts) => {
-
           if (facts.length) {
-            fact.fact = facts[0];
+            processedFact.fact = facts[0];
           }
 
-          resolve(fact);
+          resolve(processedFact);
         });
       });
     });
@@ -147,7 +148,8 @@ class Factual extends FactualBase {
 
   displayFacebookFacts() {
     this.facebookFacts.forEach((fact) => {
-      if (fact.processed) {
+      const processedFact = fact;
+      if (processedFact.processed) {
         return;
       }
 
@@ -165,7 +167,7 @@ class Factual extends FactualBase {
 
       $('div', fact.context).first().after($(content));
 
-      fact.processed = true;
+      processedFact.processed = true;
     });
   }
 
