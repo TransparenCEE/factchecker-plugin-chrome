@@ -1,6 +1,6 @@
 {
   "name": "factchecker-plugin-chrome",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Factual Chrome extension.",
   "main": "index.js",
   "scripts": {
