@@ -209,10 +209,8 @@ class Factual extends FactualBase {
       [sclass] = getFactInfo(fact);
 
       this.marker.mark(fact.declaratie, {
-        debug: true,
         className: `factchecker-fact-mark-${sclass}`,
         acrossElements: true,
-        iframes: true,
         separateWordSearch: false,
         each: (factMark) => {
           const content = this.factTemplate({
@@ -233,6 +231,11 @@ class Factual extends FactualBase {
             arrow: false,
             placement: 'bottom',
             content,
+            onShow: (element) => {
+              $('.factchecker-fact-details__close a', element).on('click', () => {
+                $(factMark).webuiPopover('hide');
+              });
+            },
           });
         },
         noMatch: () => {

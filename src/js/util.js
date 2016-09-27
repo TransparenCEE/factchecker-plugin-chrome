@@ -1,4 +1,5 @@
 import qs from 'qs';
+import md5 from 'crypto-js/md5';
 
 const defaultDiacriticsRemovalMap = [
   {'base':'A', 'letters':'\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F'},
@@ -151,6 +152,10 @@ export const extractLink = (url) => {
   return parsed.u;
 }
 
+export const encodeParams = (params) => {
+  return qs.stringify(params);
+}
+
 export const getFactInfo = (fact) => {
   let sclass = 'true';
   let stext = 'adevărată';
@@ -174,3 +179,17 @@ export const getFactInfo = (fact) => {
     stext,
   ];
 };
+
+export const getUrlCode = (url) => {
+  const parser = document.createElement('a');
+  parser.href = url;
+
+  let purl = `${parser.host}${parser.pathname}`;
+  purl = purl.replace(/^(www\.)/, '');
+
+  if (purl[purl.length - 1] === '/') {
+    purl = purl.substr(0, purl.length - 1);
+  }
+
+  return md5(purl).toString();
+}

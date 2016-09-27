@@ -6,10 +6,9 @@
  *
  * @author Alexandru Badiu <andu@ctrlz.ro>
  */
-import md5 from 'crypto-js/md5';
 import config from './config';
 import FactualBase from './factual_base';
-import { getUserToken } from './util';
+import { getUserToken, encodeParams, getUrlCode } from './util';
 require('../css/factual.scss');
 
 class FactualBackground extends FactualBase {
@@ -116,22 +115,30 @@ class FactualBackground extends FactualBase {
 
   getFacts(url) {
     return new Promise((resolve) => {
-      const urlCode = this.getUrlCode(url);
+      const urlCode = getUrlCode(url);
+      const params = {
+        q: urlCode,
+        u: this.settings.uid,
+        client: 'chrome_extension',
+        origin: 'site',
+      };
 
       $.ajax({
         dataType: 'json',
-        url: `http:\/\/${config.api}?q=${urlCode}&u=${this.settings.uid}&client=chrome_extension&origin=site`,
+        url: `http:\/\/${config.api}?${encodeParams(params)}`,
       }).then((response) => {
         const facts = [];
         if (response.error) {
           return resolve(facts);
         }
 
-        Object.keys(response.data).forEach((id) => {
-          const fact = response.data[id];
-          fact.id = id;
-          facts.push(fact);
-        });
+        if (response.data) {
+          Object.keys(response.data).forEach((id) => {
+            const fact = response.data[id];
+            fact.id = id;
+            facts.push(fact);
+          });
+        }
 
         resolve(facts);
       });
@@ -140,9 +147,15 @@ class FactualBackground extends FactualBase {
 
   getAllFacts() {
     return new Promise((resolve, reject) => {
+      const params = {
+        q: 'all',
+        u: this.settings.uid,
+        client: 'chrome_extension',
+        origin: 'site',
+      };
       $.ajax({
         dataType: 'json',
-        url: `http:\/\/${config.api}?q=all&u=${this.settings.uid}&client=chrome_extension&origin=site`,
+        url: `http:\/\/${config.api}?${encodeParams(params)}`,
       }).then((response) => {
         if (response.error) {
           reject(new Error(response.error));
@@ -153,20 +166,6 @@ class FactualBackground extends FactualBase {
         }
       });
     });
-  }
-
-  getUrlCode(url) {
-    const parser = document.createElement('a');
-    parser.href = url;
-
-    let purl = `${parser.host}${parser.pathname}`;
-    purl = purl.replace(/^(www\.)/, '');
-
-    if (purl[purl.length - 1] === '/') {
-      purl = purl.substr(0, purl.length - 1);
-    }
-
-    return md5(purl);
   }
 }
 
