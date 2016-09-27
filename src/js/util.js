@@ -60,31 +60,7 @@ export const encodeParams = (params) => {
   return qs.stringify(params);
 };
 
-export const getFactInfo = (fact) => {
-  let sclass = 'true';
-  let stext = 'adevărată';
-
-  if (fact.status === 'Fals') {
-    sclass = 'false';
-    stext = 'falsă';
-  } else if (fact.status === 'Parțial fals') {
-    sclass = 'pfalse';
-    stext = 'parțial falsă';
-  } else if (fact.status === 'Parțial adevărat') {
-    sclass = 'ptrue';
-    stext = 'parțial adevărată';
-  } else if (fact.status === 'Neutru') {
-    sclass = 'neutral';
-    stext = 'neutră';
-  }
-
-  return [
-    sclass,
-    stext,
-  ];
-};
-
-export const getUrlCode = (url) => {
+export const getShortUrl = (url) => {
   const parser = document.createElement('a');
   parser.href = url;
 
@@ -95,5 +71,19 @@ export const getUrlCode = (url) => {
     purl = purl.substr(0, purl.length - 1);
   }
 
-  return md5(purl).toString();
+  return purl;
+};
+
+export const getUrlCode = (url) => {
+  return md5(getShortUrl(url)).toString();
+};
+
+export const getFacebookUrl = (article) => {
+  const url = $('a[rel=nofollow]', article).prop('href');
+  if (!url) {
+    return null;
+  }
+
+  const aurl = extractLink(url);
+  return aurl;
 };

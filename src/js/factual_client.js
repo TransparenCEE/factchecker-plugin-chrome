@@ -6,11 +6,12 @@
  *
  * @author Alexandru Badiu <andu@ctrlz.ro>
  */
+import Rx from 'rx';
 import Mark from 'mark.js';
 import 'webui-popover';
 import MutationSummary from 'mutation-summary';
 import FactualBase from './factual_base';
-import { removeDiacritics, getDate, getURL, isFacebook, extractLink, getFactInfo } from './util';
+import { getURL, isFacebook, getFacebookUrl } from './util';
 
 class Factual extends FactualBase {
   constructor() {
@@ -60,24 +61,35 @@ class Factual extends FactualBase {
 
   handleFacebook() {
     console.info('[factchecker-plugin-chrome] On facebook.');
-    $('div[aria-label=Story]').each((i, article) => {
-      const url = this.getFacebookUrl(article);
 
-      if (url) {
-        this.facebookFacts.push({
-          context: article,
-          url,
-          fact: null,
-          processed: false,
+    this.fbStream$ = new Rx.Subject();
+    this.fbArticles$ = this.fbStream$
+      .filter(article => !$(article.context).hasClass('factual-processed'))
+      .filter(article => article.url)
+      .flatMap((article) => {
+        return new Promise((resolve) => {
+          chrome.runtime.sendMessage({
+            action: 'facts-get',
+            url: article.url,
+          }, (facts) => {
+            resolve(Object.assign({}, article, {
+              fact: facts.length ? facts[0] : null,
+            }));
+          });
         });
-      }
+      })
+      .filter(article => article.fact);
+
+    this.fbArticles$.subscribe((article) => {
+      this.displayFacebookFact(article);
     });
 
-    this.loadFacebookFacts()
-      .then((facts) => {
-        this.facebookFacts = _.filter(facts, fact => fact.fact !== null);
-      })
-      .then(() => this.displayFacebookFacts());
+    $('div[aria-label=Story]').each((i, article) => {
+      this.fbStream$.onNext({
+        context: article,
+        url: getFacebookUrl(article),
+      });
+    });
 
     this.facebookObserver = new MutationSummary({
       callback: summaries => this.mutationFacebook(summaries),
@@ -89,86 +101,28 @@ class Factual extends FactualBase {
     });
   }
 
-  getFacebookUrl(article) {
-    const url = $('a[rel=nofollow]', article).prop('href');
-    if (!url) {
-      return null;
-    }
-
-    const aurl = extractLink(url);
-    return aurl;
-  }
-
   mutationFacebook(summaries) {
     if (summaries.length && summaries[0].added && summaries[0].added.length) {
       summaries[0].added.forEach((article) => {
-        const url = this.getFacebookUrl(article);
-
-        if (url) {
-          this.facebookFacts.push({
-            context: article,
-            url,
-            fact: null,
-            processed: false,
-          });
-        }
-      });
-    }
-
-    this.loadFacebookFacts()
-      .then((facts) => {
-        this.facebookFacts = _.filter(facts, fact => fact.fact !== null);
-      })
-      .then(() => console.log(`After mutation: ${this.facebookFacts.length}.`))
-      .then(() => this.displayFacebookFacts());
-  }
-
-  loadFacebookFacts() {
-    return Promise.mapSeries(this.facebookFacts, (fact) => {
-      return new Promise((resolve) => {
-        const processedFact = fact;
-
-        if (processedFact.processed) {
-          resolve(processedFact);
-        }
-
-        chrome.runtime.sendMessage({
-          action: 'facts-get',
-          url: fact.url,
-        }, (facts) => {
-          if (facts.length) {
-            processedFact.fact = facts[0];
-          }
-
-          resolve(processedFact);
+        this.fbStream$.onNext({
+          context: article,
+          url: getFacebookUrl(article),
         });
       });
-    });
+    }
   }
 
-  displayFacebookFacts() {
-    this.facebookFacts.forEach((fact) => {
-      const processedFact = fact;
-      if (processedFact.processed) {
-        return;
-      }
-
-      let sclass;
-      let stext;
-      [sclass, stext] = getFactInfo(fact.fact);
-
-      const content = this.facebookFactTemplate({
-        status: fact.fact.status,
-        stext,
-        url: fact.fact.url,
-        logo: getURL('assets/factual_logo.png'),
-        statusClass: sclass,
-      });
-
-      $('div', fact.context).first().after($(content));
-
-      processedFact.processed = true;
+  displayFacebookFact(article) {
+    const content = this.facebookFactTemplate({
+      status: article.fact.status,
+      stext: article.fact.stext,
+      url: article.fact.url,
+      logo: getURL('assets/factual_logo.png'),
+      statusClass: article.fact.sclass,
     });
+
+    $('div', article.context).first().after($(content));
+    $(article.context).addClass('factual-processed');
   }
 
   displayFacts() {
@@ -183,16 +137,12 @@ class Factual extends FactualBase {
   }
 
   displayUnmatchedFact(fact) {
-    let sclass;
-    let stext;
-    [sclass, stext] = getFactInfo(fact);
-
     let content = this.nfactTemplate({
       status: fact.status,
-      stext,
+      stext: fact.stext,
       url: fact.url,
       logo: getURL('assets/factual_logo.png'),
-      statusClass: sclass,
+      statusClass: fact.sclass,
     });
 
     content = $(content);
@@ -205,23 +155,19 @@ class Factual extends FactualBase {
   }
 
   displayFact(fact) {
-    if (fact.declaratie) {
-      const declaratie = removeDiacritics(fact.declaratie);
-      let sclass;
-      [sclass] = getFactInfo(fact);
-
-      this.marker.mark(fact.declaratie, {
-        className: `factchecker-fact-mark-${sclass}`,
+    if (fact.quote) {
+      this.marker.mark(fact.quote, {
+        className: `factchecker-fact-mark-${fact.sclass}`,
         acrossElements: true,
         separateWordSearch: false,
         each: (factMark) => {
           const content = this.factTemplate({
             status: fact.status,
-            quote: declaratie,
+            quote: fact.quote,
             url: `${fact.url}?client=chrome_extension`,
             logo: getURL('assets/factual_logo.png'),
-            statusClass: sclass,
-            date: getDate(fact.date),
+            statusClass: fact.sclass,
+            date: fact.date,
           });
 
           this.matched++;

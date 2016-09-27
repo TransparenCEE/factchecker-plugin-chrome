@@ -8,7 +8,9 @@
  */
 import config from './config';
 import FactualBase from './factual_base';
-import { getUserToken, encodeParams, getUrlCode } from './util';
+import { getUserToken, encodeParams, getUrlCode, getShortUrl } from './util';
+import { convertFact, convertFacts } from './fact';
+
 require('../css/factual.scss');
 
 class FactualBackground extends FactualBase {
@@ -16,10 +18,14 @@ class FactualBackground extends FactualBase {
     super();
     console.info('[factchecker-plugin-chrome] Background init.');
 
+    this.cachedFacts = [];
+    this.alarmName = 'factual-update-facts';
     this.settings = {
       enabled: true,
       uid: '',
     };
+
+    chrome.alarms.clear(this.alarmName);
 
     chrome.storage.sync.get('settings', (result) => {
       if (result) {
@@ -31,10 +37,20 @@ class FactualBackground extends FactualBase {
         this.settingsUpdate();
       }
 
-      console.log(`UID: ${this.settings.uid}`);
-
       this.setupEvents();
+      // this.setupAlarms();
     });
+
+    chrome.storage.local.get('facts', (data) => {
+      this.cachedFacts = data.facts;
+    });
+  }
+
+  updateCachedFacts(facts) {
+    this.cachedFacts = facts;
+    chrome.storage.local.set({ facts: this.cachedFacts });
+    console.log('updated cached facts');
+    console.log(this.cachedFacts);
   }
 
   toolbarClicked() {
@@ -47,6 +63,9 @@ class FactualBackground extends FactualBase {
 
   settingsChanged(changes) {
     console.info('[factchecker-plugin-chrome] Settings changed.');
+    if (!changes.settings) {
+      return;
+    }
 
     if (!_.isEqual(changes.settings.newValue, this.settings)) {
       this.settings = changes.settings.newValue;
@@ -87,6 +106,12 @@ class FactualBackground extends FactualBase {
     }
 
     if (request.action === 'facts-get') {
+      const cfacts = this.getFactsFromCache(request.url);
+      if (cfacts.length) {
+        sendResponse(cfacts);
+        return false;
+      }
+
       this.getFacts(request.url)
         .then((facts) => {
           sendResponse(facts);
@@ -106,11 +131,37 @@ class FactualBackground extends FactualBase {
     }
   }
 
+  onAlarm(alarm) {
+    if (alarm.name === this.alarmName) {
+      this.getAllFacts()
+        .then((facts) => {
+          this.updateCachedFacts(facts);
+        });
+    }
+  }
+
   setupEvents() {
     chrome.storage.onChanged.addListener((changes, namespace) => this.settingsChanged(changes, namespace));
     chrome.browserAction.onClicked.addListener(() => this.toolbarClicked());
     chrome.tabs.onUpdated.addListener((tabId, info) => this.onUpdated(tabId, info));
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse));
+    chrome.alarms.onAlarm.addListener(alarm => this.onAlarm(alarm));
+  }
+
+  setupAlarms() {
+    chrome.alarms.getAll((alarms) => {
+      const hasAlarm = alarms.some(a => a.name === this.alarmName);
+      if (!hasAlarm) {
+        chrome.alarms.create(this.alarmName, {
+          delayInMinutes: 0.1,
+          periodInMinutes: 0.1,
+        });
+      }
+    });
+  }
+
+  getFactsFromCache(url) {
+    return _.filter(this.cachedFacts, { source: getShortUrl(url) });
   }
 
   getFacts(url) {
@@ -133,11 +184,7 @@ class FactualBackground extends FactualBase {
         }
 
         if (response.data) {
-          Object.keys(response.data).forEach((id) => {
-            const fact = response.data[id];
-            fact.id = id;
-            facts.push(fact);
-          });
+          Object.keys(response.data).forEach(id => facts.push(convertFact(response.data[id])));
         }
 
         resolve(facts);
@@ -146,7 +193,7 @@ class FactualBackground extends FactualBase {
   }
 
   getAllFacts() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const params = {
         q: 'all',
         u: this.settings.uid,
@@ -158,12 +205,14 @@ class FactualBackground extends FactualBase {
         url: `http:\/\/${config.api}?${encodeParams(params)}`,
       }).then((response) => {
         if (response.error) {
-          reject(new Error(response.error));
-        } else {
-          const facts = [];
-
-          resolve(facts);
+          return resolve([]);
         }
+
+        if (response.data) {
+          return resolve(convertFacts(response.data));
+        }
+
+        return resolve([]);
       });
     });
   }

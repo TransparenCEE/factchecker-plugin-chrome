@@ -1,11 +1,13 @@
 {
   "name": "factchecker-plugin-chrome",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Factual Chrome extension.",
   "main": "index.js",
   "scripts": {
     "eslint": "eslint src",
+    "prestart": "rm -rf build",
     "start": "gulp",
+    "prebuild": "rm -rf dist",
     "build": "gulp build"
   },
   "repository": {
@@ -67,6 +69,7 @@
     "mark.js": "julmot/mark.js",
     "mutation-summary": "0.0.0",
     "qs": "^6.2.1",
+    "rx": "^4.1.0",
     "trackjs": "^2.4.0",
     "webui-popover": "^1.2.16"
   }
