@@ -1,5 +1,8 @@
 # Factual Chrome extension
 
+## Releases
+For the latest compiled version check the [releases](https://github.com/TransparenCEE/factchecker-plugin-chrome/releases) page.
+
 ## Installation
 
 * Install NodeJS from https://nodejs.org/
