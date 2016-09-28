@@ -6,10 +6,9 @@
  *
  * @author Alexandru Badiu <andu@ctrlz.ro>
  */
-import config from './config';
 import FactualBase from './factual_base';
-import { getUserToken, encodeParams, getUrlCode, getShortUrl } from './util';
-import { convertFact, convertFacts } from './fact';
+import { getFacts, getAllFacts, getFactsFromCache, setFactsCache } from './api';
+import { getUserToken } from './util';
 
 require('../css/factual.scss');
 
@@ -25,7 +24,7 @@ class FactualBackground extends FactualBase {
       uid: '',
     };
 
-    chrome.alarms.clear(this.alarmName);
+    // chrome.alarms.clear(this.alarmName);
 
     chrome.storage.sync.get('settings', (result) => {
       if (result) {
@@ -38,19 +37,17 @@ class FactualBackground extends FactualBase {
       }
 
       this.setupEvents();
-      // this.setupAlarms();
+      this.setupAlarms();
     });
 
     chrome.storage.local.get('facts', (data) => {
-      this.cachedFacts = data.facts;
+      setFactsCache(data.facts);
     });
   }
 
   updateCachedFacts(facts) {
-    this.cachedFacts = facts;
+    setFactsCache(facts);
     chrome.storage.local.set({ facts: this.cachedFacts });
-    console.log('updated cached facts');
-    console.log(this.cachedFacts);
   }
 
   toolbarClicked() {
@@ -106,13 +103,13 @@ class FactualBackground extends FactualBase {
     }
 
     if (request.action === 'facts-get') {
-      const cfacts = this.getFactsFromCache(request.url);
+      const cfacts = getFactsFromCache(request.url);
       if (cfacts.length) {
         sendResponse(cfacts);
         return false;
       }
 
-      this.getFacts(request.url)
+      getFacts(request.url, this.settings.uid, 'chrome_extension', 'site')
         .then((facts) => {
           sendResponse(facts);
         });
@@ -133,7 +130,7 @@ class FactualBackground extends FactualBase {
 
   onAlarm(alarm) {
     if (alarm.name === this.alarmName) {
-      this.getAllFacts()
+      getAllFacts(this.settings.uid, 'chrome_extension', 'site')
         .then((facts) => {
           this.updateCachedFacts(facts);
         });
@@ -153,67 +150,10 @@ class FactualBackground extends FactualBase {
       const hasAlarm = alarms.some(a => a.name === this.alarmName);
       if (!hasAlarm) {
         chrome.alarms.create(this.alarmName, {
-          delayInMinutes: 0.1,
-          periodInMinutes: 0.1,
+          delayInMinutes: 1,
+          periodInMinutes: 60 * 24,
         });
       }
-    });
-  }
-
-  getFactsFromCache(url) {
-    return _.filter(this.cachedFacts, { source: getShortUrl(url) });
-  }
-
-  getFacts(url) {
-    return new Promise((resolve) => {
-      const urlCode = getUrlCode(url);
-      const params = {
-        q: urlCode,
-        u: this.settings.uid,
-        client: 'chrome_extension',
-        origin: 'site',
-      };
-
-      $.ajax({
-        dataType: 'json',
-        url: `http:\/\/${config.api}?${encodeParams(params)}`,
-      }).then((response) => {
-        const facts = [];
-        if (response.error) {
-          return resolve(facts);
-        }
-
-        if (response.data) {
-          Object.keys(response.data).forEach(id => facts.push(convertFact(response.data[id])));
-        }
-
-        resolve(facts);
-      });
-    });
-  }
-
-  getAllFacts() {
-    return new Promise((resolve) => {
-      const params = {
-        q: 'all',
-        u: this.settings.uid,
-        client: 'chrome_extension',
-        origin: 'site',
-      };
-      $.ajax({
-        dataType: 'json',
-        url: `http:\/\/${config.api}?${encodeParams(params)}`,
-      }).then((response) => {
-        if (response.error) {
-          return resolve([]);
-        }
-
-        if (response.data) {
-          return resolve(convertFacts(response.data));
-        }
-
-        return resolve([]);
-      });
     });
   }
 }
