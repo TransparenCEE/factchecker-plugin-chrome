@@ -27,7 +27,7 @@ class FactualBackground extends FactualBase {
     // chrome.alarms.clear(this.alarmName);
 
     chrome.storage.sync.get('settings', (result) => {
-      if (result) {
+      if (result && result.settings) {
         this.settings = result.settings;
       }
 
@@ -51,15 +51,12 @@ class FactualBackground extends FactualBase {
   }
 
   toolbarClicked() {
-    console.info('[factchecker-plugin-chrome] Toolbar clicked.');
-
     this.settings.enabled = !this.settings.enabled;
 
     this.settingsUpdate();
   }
 
   settingsChanged(changes) {
-    console.info('[factchecker-plugin-chrome] Settings changed.');
     if (!changes.settings) {
       return;
     }
@@ -73,8 +70,6 @@ class FactualBackground extends FactualBase {
   settingsUpdate() {
     chrome.storage.sync.set({
       settings: this.settings,
-    }, () => {
-      console.info('[factchecker-plugin-chrome] Settings saved.');
     });
 
     this.settingsPropagate();
@@ -95,8 +90,6 @@ class FactualBackground extends FactualBase {
   }
 
   onMessage(request, sender, sendResponse) {
-    console.info('[factchecker-plugin-chrome] Got message.');
-
     if (request.action === 'settings-get') {
       sendResponse(this.settings);
       return false;

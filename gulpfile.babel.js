@@ -89,6 +89,7 @@ gulp.task('static', () => {
   gulp.src([
     'manifest.json',
     'src/**/*.png',
+    'src/**/*.svg',
     'src/**/*.gif',
     'src/**/*.eot',
     'src/**/*.otf',
@@ -143,7 +144,7 @@ gulp.task('dev', ['static'], () => {
   devConfig.watch = true;
 
   gulp.watch(['src/*.json'], ['watch-static']);
-  gulp.watch(['src/assets/*.png', 'src/assets/*.gif'], ['watch-static']);
+  gulp.watch(['src/assets/*.png', 'src/assets/*.gif', 'src/assets/*.svg'], ['watch-static']);
 
   gutil.log('Starting webpack.');
   const compiler = webpack(config, (err, stats) => {

@@ -23,6 +23,8 @@ export const getFacts = (url, uid, client, origin) => {
       origin,
     };
 
+    console.info('[factchecker-plugin-chrome] Querying for facts.', `http:\/\/${config.api}?${encodeParams(params)}`);
+
     $.ajax({
       dataType: 'json',
       url: `http:\/\/${config.api}?${encodeParams(params)}`,
@@ -51,6 +53,8 @@ const getAllPage = (page, uid, client, origin) => {
   };
 
   return Rx.Observable.fromPromise(new Promise((resolve) => {
+    console.info('[factchecker-plugin-chrome] Caching facts.', `http:\/\/${config.api}?${encodeParams(params)}`);
+
     $.ajax({
       dataType: 'json',
       url: `http:\/\/${config.api}?${encodeParams(params)}`,

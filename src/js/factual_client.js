@@ -16,11 +16,11 @@ import { getURL, isFacebook, getFacebookUrl } from './util';
 class Factual extends FactualBase {
   constructor() {
     super();
-    console.info('[factchecker-plugin-chrome] Client init.');
 
     this.factTemplate = _.template(require('../views/fact.html'));
     this.nfactTemplate = _.template(require('../views/unmatched-fact.html'));
     this.facebookFactTemplate = _.template(require('../views/facebook.html'));
+    this.markTemplate = _.template(require('../views/factual-mark.html'));
 
     this.facebookObserver = null;
     this.facebookFacts = [];
@@ -40,8 +40,6 @@ class Factual extends FactualBase {
 
   setupEvents() {
     chrome.runtime.onMessage.addListener((request) => {
-      console.info('[factchecker-plugin-chrome] Got message.');
-
       if (request.action === 'settings-updated') {
         this.settings = request.msg;
       }
@@ -60,8 +58,6 @@ class Factual extends FactualBase {
   }
 
   handleFacebook() {
-    console.info('[factchecker-plugin-chrome] On facebook.');
-
     this.fbStream$ = new Rx.Subject();
     this.fbArticles$ = this.fbStream$
       .filter(article => !$(article.context).hasClass('factual-processed'))
@@ -84,7 +80,7 @@ class Factual extends FactualBase {
       this.displayFacebookFact(article);
     });
 
-    $('div[aria-label=Story]').each((i, article) => {
+    $('div[role=article]').each((i, article) => {
       this.fbStream$.onNext({
         context: article,
         url: getFacebookUrl(article),
@@ -95,7 +91,7 @@ class Factual extends FactualBase {
       callback: summaries => this.mutationFacebook(summaries),
       queries: [
         {
-          element: 'div[aria-label=Story]',
+          element: 'div[role=article]',
         },
       ],
     });
@@ -157,7 +153,7 @@ class Factual extends FactualBase {
   displayFact(fact) {
     if (fact.quote) {
       this.marker.mark(fact.quote, {
-        className: `factchecker-fact-mark-${fact.sclass}`,
+        className: `factchecker-fact-mark factchecker-fact-mark-${fact.sclass}`,
         acrossElements: true,
         separateWordSearch: false,
         each: (factMark) => {
@@ -172,7 +168,9 @@ class Factual extends FactualBase {
 
           this.matched++;
 
-          $(factMark).append(require('../views/factual-mark.html'));
+          // $(factMark).append(this.markTemplate({
+          //   fmark: getURL('assets/factual_logo.png'),
+          // }));
 
           $(factMark).webuiPopover({
             width: 320,

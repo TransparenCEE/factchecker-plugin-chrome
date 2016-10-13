@@ -274,56 +274,15 @@ mark {
   }
 }
 
-.factchecker-fact-details-footnote__container {
-  display: inline-block;
+.factchecker-fact-mark {
   position: relative;
-  text-indent: 0;
 }
 
-.factchecker-fact-details-footnote__button {
-  &:after {
-    content: '';
-    display: table;
-    clear: both;
-  }
-
-  position: relative;
-  z-index: 5;
-  top: -0.1em;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  display: inline-block;
-  padding: 0.35em;
-  margin: 0 0.1em 0 0.2em;
-  border: none;
-  border-radius: 0.3em;
-  cursor: pointer;
-  background-color: rgba(110,110,110,0.2);
-  -webkit-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  backface-visibility: hidden;
-  font-size: 1rem;
-  line-height: 0;
-  vertical-align: middle;
-  text-decoration: none;
-  -webkit-font-smoothing: antialiased;
-  -webkit-transition-property: background-color;
-  transition-property: background-color;
-  -webkit-transition-duration: 0.25s;
-  transition-duration: 0.25s;
-}
-
-.factchecker-fact-details-footnote__button__circle {
-  &:last-child {
-    margin-right: 0;
-  }
-
-  display: inline-block;
-  width: 0.25em;
-  height: 0.25em;
-  margin-right: 0.25em;
-  float: left;
+.factchecker-fact-mark::after {
+  content: 'a';
+  font-family: 'factual' !important;
+  font-style: normal !important;
+  color: #474647 !important;
 }
 
 .factchecker-fact-facebook {

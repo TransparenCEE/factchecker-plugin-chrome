@@ -1,7 +1,7 @@
 {
   "name": "Factual",
   "description": "Prima extensie de fact-checking pe politicile și declarațiile publice din România.",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "icons": {
     "16": "assets/factual_icon_16x16.png",
     "32": "assets/factual_icon_32x32.png",
@@ -49,6 +49,7 @@
   ],
   "manifest_version": 2,
   "web_accessible_resources": [
+    "assets/factual_icon.svg",
     "assets/factual_logo.png",
     "assets/factual_icon_16x16.png",
     "assets/factual_icon_19x19.png",
@@ -59,6 +60,10 @@
     "assets/check_true.png",
     "assets/check_false.png",
     "assets/check_neutral.png",
+    "fonts/factual.eot",
+    "fonts/factual.svg",
+    "fonts/factual.ttf",
+    "fonts/factual.woff",
     "fonts/SourceSansPro-Regular.eot",
     "fonts/SourceSansPro-Regular.ttf.woff2",
     "fonts/SourceSansPro-Regular.otf.woff",
