@@ -20,7 +20,6 @@ class Factual extends FactualBase {
     this.factTemplate = _.template(require('../views/fact.html'));
     this.nfactTemplate = _.template(require('../views/unmatched-fact.html'));
     this.facebookFactTemplate = _.template(require('../views/facebook.html'));
-    this.markTemplate = _.template(require('../views/factual-mark.html'));
 
     this.facebookObserver = null;
     this.facebookFacts = [];
@@ -167,10 +166,6 @@ class Factual extends FactualBase {
           });
 
           this.matched++;
-
-          // $(factMark).append(this.markTemplate({
-          //   fmark: getURL('assets/factual_logo.png'),
-          // }));
 
           $(factMark).webuiPopover({
             width: 320,

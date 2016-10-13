@@ -274,10 +274,6 @@ mark {
   }
 }
 
-.factchecker-fact-mark {
-  position: relative;
-}
-
 .factchecker-fact-mark::after {
   content: 'a';
   font-family: 'factual' !important;
