@@ -1,7 +1,7 @@
 {
   "name": "Factual",
   "description": "Prima extensie de fact-checking pe politicile și declarațiile publice din România.",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "icons": {
     "16": "assets/factual_icon_16x16.png",
     "32": "assets/factual_icon_32x32.png",
@@ -27,8 +27,8 @@
   "background": {
     "scripts": [
       "factual_common.js",
-      "factual_reload.js",
-      "factual_background.js"
+      "factual_background.js",
+      "factual_reload.js"
     ],
     "persistent": true
   },

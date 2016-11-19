@@ -1,7 +1,7 @@
 import gulp from 'gulp';
+import _ from 'lodash';
 import gutil from 'gutil';
 import webpack from 'webpack';
-import gulpWebpack from 'gulp-webpack';
 import eslint from 'gulp-eslint';
 
 import runSequence from 'run-sequence';
@@ -11,6 +11,7 @@ import childProcess from 'child_process';
 import mkdirp from 'mkdirp';
 import bump from 'gulp-bump';
 import fs from 'fs';
+import jeditor from 'gulp-json-editor';
 
 import config from './config/webpack.config.js';
 
@@ -42,17 +43,37 @@ gulp.task('lint', () => {
 gulp.task('pre-build', (callback) => {
   runSequence(
     'clean',
-    'bump',
+    'bump-manifest',
+    'bump-package',
     'lint',
     'static',
+    'clean-manifest',
     callback
   );
 });
 
-gulp.task('bump', () => {
-  return gulp.src(['./manifest.json', './package.json'])
-  .pipe(bump())
-  .pipe(gulp.dest('./'));
+gulp.task('clean-manifest', () => {
+  return gulp.src(['./build/manifest.json'])
+    .pipe(jeditor((json) => {
+      const manifest = Object.assign({}, json);
+
+      manifest.background.scripts = _.filter(manifest.background.scripts, script => script !== 'factual_reload.js');
+
+      return manifest;
+    }))
+    .pipe(gulp.dest('./build/'));
+});
+
+gulp.task('bump-package', () => {
+  return gulp.src(['./package.json'])
+    .pipe(bump())
+    .pipe(gulp.dest('./'));
+});
+
+gulp.task('bump-manifest', () => {
+  return gulp.src(['./src/manifest.json'])
+    .pipe(bump())
+    .pipe(gulp.dest('./src/'));
 });
 
 gulp.task('build', ['pre-build'], (callback) => {
@@ -85,9 +106,9 @@ gulp.task('build', ['pre-build'], (callback) => {
   });
 });
 
-gulp.task('static', () => {
+gulp.task('static', ['clean'], () => {
   gulp.src([
-    'manifest.json',
+    'src/manifest.json',
     'src/**/*.png',
     'src/**/*.svg',
     'src/**/*.gif',
@@ -138,7 +159,6 @@ gulp.task('watch-webpack', [], (callback) => {
   );
 });
 
-// gulp.task('dev', ['static', 'build-dev', 'reload'], () => {
 gulp.task('dev', ['static'], () => {
   const devConfig = config;
   devConfig.watch = true;
