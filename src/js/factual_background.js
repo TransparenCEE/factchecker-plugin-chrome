@@ -6,15 +6,13 @@
  *
  * @author Alexandru Badiu <andu@ctrlz.ro>
  */
-import FactualBase from './factual_base';
 import { getFacts, getAllFacts, getFactsFromCache, setFactsCache } from './api';
 import { getUserToken } from './util';
 
 require('../css/factual.scss');
 
-class FactualBackground extends FactualBase {
+class FactualBackground {
   constructor() {
-    super();
     console.info('[factchecker-plugin-chrome] Background init.');
 
     this.cachedFacts = [];
@@ -23,6 +21,7 @@ class FactualBackground extends FactualBase {
       enabled: true,
       uid: '',
     };
+    this.tabIndicators = {};
 
     // chrome.alarms.clear(this.alarmName);
 
@@ -90,6 +89,12 @@ class FactualBackground extends FactualBase {
   }
 
   onMessage(request, sender, sendResponse) {
+    if (request.action === 'action-update') {
+      this.updateBrowserAction(sender.tab.id, request.numFacts);
+      
+      return false;
+    }
+
     if (request.action === 'settings-get') {
       sendResponse(this.settings);
       return false;
@@ -99,6 +104,10 @@ class FactualBackground extends FactualBase {
       const cfacts = getFactsFromCache(request.url);
       if (cfacts.length) {
         sendResponse(cfacts);
+
+        // We ping the API even if we had a cache hit for statistics purposes.
+        getFacts(request.url, this.settings.uid, 'chrome_extension', 'site');
+
         return false;
       }
 
@@ -121,6 +130,20 @@ class FactualBackground extends FactualBase {
     }
   }
 
+  onActivated(activeInfo) {
+    if (this.tabIndicators[activeInfo.tabId]) {
+      this.updateBrowserAction(activeInfo.tabId, this.tabIndicators[activeInfo.tabId]);
+
+      return;
+    }
+
+    this.updateBrowserAction(activeInfo.tabId, 0);
+  }
+
+  onRemoved(tabId, removeInfo) {
+    delete this.tabIndicators[tabId];
+  }
+
   onAlarm(alarm) {
     if (alarm.name === this.alarmName) {
       getAllFacts(this.settings.uid, 'chrome_extension', 'site')
@@ -130,10 +153,37 @@ class FactualBackground extends FactualBase {
     }
   }
 
+  updateBrowserAction(tabId, numFacts) {
+    if (numFacts) {
+      chrome.browserAction.setIcon({
+        path : {
+          '19': 'assets/factual_icon_19x19.png',
+          '38': 'assets/factual_icon_38x38.png',
+        }
+      });
+
+      chrome.browserAction.setBadgeText({ text: `${numFacts}` });
+      this.tabIndicators[tabId] = numFacts;
+      return;
+    }
+
+    chrome.browserAction.setIcon({
+      path : {
+        '19': 'assets/factual_icon_gray_19x19.png',
+        '38': 'assets/factual_icon_gray_38x38.png',
+      }
+    });
+
+    chrome.browserAction.setBadgeText({ text: '' });
+    delete this.tabIndicators[tabId];
+  }
+
   setupEvents() {
     chrome.storage.onChanged.addListener((changes, namespace) => this.settingsChanged(changes, namespace));
     chrome.browserAction.onClicked.addListener(() => this.toolbarClicked());
+    chrome.tabs.onActivated.addListener((activeInfo) => this.onActivated(activeInfo));
     chrome.tabs.onUpdated.addListener((tabId, info) => this.onUpdated(tabId, info));
+    chrome.tabs.onRemoved.addListener((tabId, removeInfo) => this.onRemoved(tabId, removeInfo));
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse));
     chrome.alarms.onAlarm.addListener(alarm => this.onAlarm(alarm));
   }

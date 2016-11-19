@@ -274,11 +274,15 @@ mark {
   }
 }
 
-.factchecker-fact-mark::after {
-  content: 'a';
-  font-family: 'factual' !important;
-  font-style: normal !important;
-  color: #474647 !important;
+.factchecker-fact-mark {
+  &.factchecker-fact-mark-icon {
+    &::after {
+      content: 'a';
+      font-family: 'factual' !important;
+      font-style: normal !important;
+      color: #474647 !important;
+    }
+  }
 }
 
 .factchecker-fact-facebook {

@@ -10,13 +10,10 @@ import Rx from 'rx';
 import Mark from 'mark.js';
 import 'webui-popover';
 import MutationSummary from 'mutation-summary';
-import FactualBase from './factual_base';
-import { getURL, isFacebook, getFacebookUrl } from './util';
+import { getURL, getUrlCode, isFacebook, getFacebookUrl } from './util';
 
-class Factual extends FactualBase {
+class Factual {
   constructor() {
-    super();
-
     this.factTemplate = _.template(require('../views/fact.html'));
     this.nfactTemplate = _.template(require('../views/unmatched-fact.html'));
     this.facebookFactTemplate = _.template(require('../views/facebook.html'));
@@ -50,6 +47,8 @@ class Factual extends FactualBase {
           chrome.runtime.sendMessage({ action: 'facts-get', url: window.location.href }, (facts) => {
             this.facts = facts;
             this.displayFacts();
+
+            chrome.runtime.sendMessage({ action: 'action-update', numFacts: this.facts.length });
           });
         }
       }
@@ -151,8 +150,9 @@ class Factual extends FactualBase {
 
   displayFact(fact) {
     if (fact.quote) {
+      const factClass = `factchecker-${getUrlCode(fact.url)}`;
       this.marker.mark(fact.quote, {
-        className: `factchecker-fact-mark factchecker-fact-mark-${fact.sclass}`,
+        className: `${factClass} factchecker-fact-mark factchecker-fact-mark-${fact.sclass}`,
         acrossElements: true,
         separateWordSearch: false,
         each: (factMark) => {
@@ -178,6 +178,9 @@ class Factual extends FactualBase {
               });
             },
           });
+        },
+        done: () => {
+          $(`.${factClass}`).last().addClass('factchecker-fact-mark-icon');
         },
         noMatch: () => {
           this.unmatchedFact = fact;

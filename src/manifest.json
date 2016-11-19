@@ -10,8 +10,8 @@
   },
   "browser_action": {
     "default_icon": {
-      "19": "assets/factual_icon_19x19.png",
-      "38": "assets/factual_icon_38x38.png"
+      "19": "assets/factual_icon_gray_19x19.png",
+      "38": "assets/factual_icon_gray_38x38.png"
     },
     "default_title": "Factual"
   },
@@ -53,8 +53,10 @@
     "assets/factual_logo.png",
     "assets/factual_icon_16x16.png",
     "assets/factual_icon_19x19.png",
+    "assets/factual_icon_gray_19x19.png",
     "assets/factual_icon_32x32.png",
     "assets/factual_icon_38x38.png",
+    "assets/factual_icon_gray_38x38.png",
     "assets/factual_icon_48x48.png",
     "assets/factual_icon_128x128.png",
     "assets/check_true.png",

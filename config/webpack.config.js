@@ -27,10 +27,6 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: require.resolve('trackjs'),
-        loader: 'exports?trackJs',
-      },
-      {
         // exclude: /node_modules/,
         include: path.join(__dirname, '../src'),
         test: /\.js$/,

@@ -71,7 +71,6 @@
     "mutation-summary": "0.0.0",
     "qs": "^6.2.1",
     "rx": "^4.1.0",
-    "trackjs": "^2.4.0",
     "webui-popover": "^1.2.16"
   }
 }
