@@ -8,6 +8,24 @@ export const removeDiacritics = (str) => {
   });
 };
 
+export const cleanupQuote = (quote) => {
+  let cleanedQuote = removeDiacritics(quote);
+
+  if (cleanedQuote[0] === '"' || cleanedQuote[0] === '„') {
+    cleanedQuote = cleanedQuote.substr(1);
+  }
+
+  if (cleanedQuote[cleanedQuote.length - 1] === '"' || cleanedQuote[cleanedQuote.length - 1] === '„') {
+    cleanedQuote = cleanedQuote.slice(0, -1);
+  }
+
+  if (cleanedQuote[cleanedQuote.length - 1] === '\\') {
+    cleanedQuote = cleanedQuote.slice(0, -1);
+  }
+
+  return cleanedQuote;
+};
+
 export const getURL = (file) => {
   return chrome.extension.getURL(file);
 };

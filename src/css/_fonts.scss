@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 @font-face{
     font-family: 'factual_source_sans_pro';
     font-weight: 400;
@@ -9,8 +11,6 @@
          url('chrome-extension://__MSG_@@extension_id__/fonts/SourceSansPro-Regular.otf') format('opentype'),
          url('chrome-extension://__MSG_@@extension_id__/fonts/SourceSansPro-Regular.ttf') format('truetype');
 }
-
-@charset "UTF-8";
 
 @font-face {
   font-family: "factual";

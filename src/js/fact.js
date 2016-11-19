@@ -1,4 +1,4 @@
-import { removeDiacritics, getDate, getShortUrl } from './util';
+import { getDate, getShortUrl, cleanupQuote } from './util';
 
 export const getFactInfo = (fact) => {
   let sclass = 'true';
@@ -7,10 +7,10 @@ export const getFactInfo = (fact) => {
   if (fact.status === 'Fals') {
     sclass = 'false';
     stext = 'falsă';
-  } else if (fact.status === 'Parțial fals') {
+  } else if (fact.status === 'Parțial fals' || fact.status === 'Parțial Fals') {
     sclass = 'pfalse';
     stext = 'parțial falsă';
-  } else if (fact.status === 'Parțial adevărat') {
+  } else if (fact.status === 'Parțial adevărat' || fact.status === 'Parțial Adevărat') {
     sclass = 'ptrue';
     stext = 'parțial adevărată';
   } else if (fact.status === 'Neutru') {
@@ -28,7 +28,7 @@ export const convertFact = (f) => {
   const fact = {};
 
   fact.source = getShortUrl(f.sursa);
-  fact.quote = f.declaratie ? removeDiacritics(f.declaratie) : null;
+  fact.quote = f.declaratie ? cleanupQuote(f.declaratie) : null;
   fact.status = f.status;
   fact.url = f.url;
   fact.date = getDate(f.date);
