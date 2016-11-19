@@ -6,15 +6,13 @@
  *
  * @author Alexandru Badiu <andu@ctrlz.ro>
  */
-import FactualBase from './factual_base';
 import { getFacts, getAllFacts, getFactsFromCache, setFactsCache } from './api';
 import { getUserToken } from './util';
 
 require('../css/factual.scss');
 
-class FactualBackground extends FactualBase {
+class FactualBackground {
   constructor() {
-    super();
     console.info('[factchecker-plugin-chrome] Background init.');
 
     this.cachedFacts = [];

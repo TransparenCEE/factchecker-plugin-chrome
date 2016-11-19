@@ -10,13 +10,10 @@ import Rx from 'rx';
 import Mark from 'mark.js';
 import 'webui-popover';
 import MutationSummary from 'mutation-summary';
-import FactualBase from './factual_base';
 import { getURL, getUrlCode, isFacebook, getFacebookUrl } from './util';
 
-class Factual extends FactualBase {
+class Factual {
   constructor() {
-    super();
-
     this.factTemplate = _.template(require('../views/fact.html'));
     this.nfactTemplate = _.template(require('../views/unmatched-fact.html'));
     this.facebookFactTemplate = _.template(require('../views/facebook.html'));
