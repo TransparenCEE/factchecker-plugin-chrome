@@ -8,5 +8,5 @@
  */
 
 export default {
-  api: 'www.factual.ro/api/',
+  api: 'api.factual.ro/api/',
 };
