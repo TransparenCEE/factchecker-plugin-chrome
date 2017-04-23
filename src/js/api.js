@@ -43,7 +43,7 @@ export const getFacts = (url, uid, client, origin) => {
   });
 };
 
-const getAllPage = (page, uid, client, origin) => {
+const getFactsForPage = (page, uid, client, origin) => {
   const params = {
     page,
     q: 'all',
@@ -81,29 +81,22 @@ const getAllPage = (page, uid, client, origin) => {
   }));
 };
 
-const getPagedItems = (index, uid, client, origin) => {
-  return getAllPage(index, uid, client, origin)
-    .flatMap((response) => {
-      const result = Rx.Observable.return(response.data);
-
-      if (response.total_pages > response.current_page) {
-        const nextPage = response.current_page + 1;
-        return result.concat(getPagedItems(nextPage, uid, client, origin));
-      }
-
-      return result;
-    });
-};
-
 export const getAllFacts = (uid, client, origin) => {
   return new Promise((resolve) => {
-    const facts$ = getPagedItems(1, uid, client, origin);
+    const facts$ = new Rx.Subject();
     let facts = [];
 
     facts$
+      .flatMap(page => getFactsForPage(page, uid, client, origin))
       .subscribe(
         (result) => {
-          facts = facts.concat(result);
+          facts = facts.concat(result.data);
+
+          if (result.total_pages > result.current_page) {
+            facts$.onNext(result.current_page + 1);
+          } else {
+            facts$.onCompleted();
+          }
         },
         (error) => {
           console.log('error');
@@ -113,5 +106,7 @@ export const getAllFacts = (uid, client, origin) => {
           resolve(facts);
         }
       );
+
+    facts$.onNext(0);
   });
 };

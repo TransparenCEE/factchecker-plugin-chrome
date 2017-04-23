@@ -91,7 +91,7 @@ class FactualBackground {
   onMessage(request, sender, sendResponse) {
     if (request.action === 'action-update') {
       this.updateBrowserAction(sender.tab.id, request.numFacts);
-      
+
       return false;
     }
 
@@ -140,7 +140,7 @@ class FactualBackground {
     this.updateBrowserAction(activeInfo.tabId, 0);
   }
 
-  onRemoved(tabId, removeInfo) {
+  onRemoved(tabId) {
     delete this.tabIndicators[tabId];
   }
 
@@ -156,10 +156,10 @@ class FactualBackground {
   updateBrowserAction(tabId, numFacts) {
     if (numFacts) {
       chrome.browserAction.setIcon({
-        path : {
-          '19': 'assets/factual_icon_19x19.png',
-          '38': 'assets/factual_icon_38x38.png',
-        }
+        path: {
+          19: 'assets/factual_icon_19x19.png',
+          38: 'assets/factual_icon_38x38.png',
+        },
       });
 
       chrome.browserAction.setBadgeText({ text: `${numFacts}` });
@@ -168,10 +168,10 @@ class FactualBackground {
     }
 
     chrome.browserAction.setIcon({
-      path : {
-        '19': 'assets/factual_icon_gray_19x19.png',
-        '38': 'assets/factual_icon_gray_38x38.png',
-      }
+      path: {
+        19: 'assets/factual_icon_gray_19x19.png',
+        38: 'assets/factual_icon_gray_38x38.png',
+      },
     });
 
     chrome.browserAction.setBadgeText({ text: '' });
