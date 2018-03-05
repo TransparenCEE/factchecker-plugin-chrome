@@ -45,7 +45,7 @@ class Factual {
           this.handleFacebook();
         } else {
           chrome.runtime.sendMessage({ action: 'facts-get', url: window.location.href }, (facts) => {
-            this.facts = facts;
+            this.facts = Array.isArray(facts) ? facts : [];
             this.displayFacts();
 
             chrome.runtime.sendMessage({ action: 'action-update', numFacts: this.facts.length });
